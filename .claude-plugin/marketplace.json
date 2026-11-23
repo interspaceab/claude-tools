@@ -1,0 +1,21 @@
+{
+  "name": "interspace",
+  "owner": {
+    "name": "Interspace AB",
+    "email": "support@interspace.se"
+  },
+  "metadata": {
+    "description": "Claude Code plugins from Interspace AB",
+    "version": "0.1.0"
+  },
+  "plugins": [
+    {
+      "name": "todo",
+      "source": "./plugins/todo",
+      "description": "Plan, track and close work as todo items in per-organization git repos, kept outside the code repo.",
+      "version": "0.1.0",
+      "category": "productivity",
+      "keywords": ["todo", "planning", "tasks", "git"]
+    }
+  ]
+}

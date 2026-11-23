@@ -1,0 +1,53 @@
+# Todo routing map.
+# Put it in <root>/private/map.yaml (synced via your private todo repo),
+# <root>/map.yaml, or point TODO_MAP at it.
+#
+# First matching rule wins -> specific rules above generic ones.
+# No match -> Claude asks. It never guesses: wrong org = wrong audience.
+
+version: 1
+
+# Root for all org clones. Override per machine with env TODO_ROOT.
+root: ~/todo
+
+orgs:
+  private:
+    path: private
+    remote: git@github.com:your-user/todo.git
+  acme:
+    path: acme
+    remote: git@github.com:acme/todo.git
+  employer:
+    path: employer
+    remote: git@github.com:employer-it/it-todo.git
+  customer-example:
+    path: customer-example
+    remote: git@github.com:acme/todo-customer-example.git
+
+# remote: normalized git remote of the code repo
+#         (protocol, user@, port and .git stripped, ':' -> '/')
+# path:   absolute working dir, '/' separators, case-insensitive on Windows
+# glob:   '*' = one segment, '**' = any number of segments
+# project omitted -> repo name (last remote segment), else dir name
+rules:
+  # Specific overrides first
+  - match: { remote: "github.com/acme/legacy-billing" }
+    org: acme
+    project: billing
+
+  # Whole orgs
+  - match: { remote: "github.com/acme/*" }
+    org: acme
+  - match: { remote: "dev.azure.com/employer/**" }
+    org: employer
+
+  # Work without a code repo (infra, tenants, networks)
+  - match: { path: "~/work/employer/**" }
+    org: employer
+  - match: { path: "~/work/customers/example/**" }
+    org: customer-example
+    project: operations
+
+  # Personal
+  - match: { remote: "github.com/your-user/*" }
+    org: private

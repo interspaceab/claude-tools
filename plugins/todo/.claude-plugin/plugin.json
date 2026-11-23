@@ -1,0 +1,13 @@
+{
+  "name": "todo",
+  "version": "0.1.0",
+  "description": "Plan, track and close work as todo items in per-organization git repos, kept outside the code repo.",
+  "author": {
+    "name": "Interspace AB",
+    "email": "support@interspace.se"
+  },
+  "homepage": "https://github.com/interspaceab/claude-tools/tree/main/plugins/todo",
+  "repository": "https://github.com/interspaceab/claude-tools",
+  "license": "MIT",
+  "keywords": ["todo", "planning", "tasks", "git"]
+}
