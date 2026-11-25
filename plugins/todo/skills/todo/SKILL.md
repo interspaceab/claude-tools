@@ -39,7 +39,7 @@ This skill's `templates/` folder (two levels up from this file:
    without confirmation.
 9. If `projects/<project>/` doesn't exist, create it with a `README.md` (from
    the template's project section: what it is, linked code repos,
-   `last_review:`) and an empty `backlog.md`, and say so.
+   `last_review:`, `milestones: []`) and an empty `backlog.md`, and say so.
 
 The **repo key** of a code repo is `<owner>/<name>` from the normalized remote
 (or the dir name if there is no remote). It's what goes in an item's `repos:`.
@@ -76,7 +76,9 @@ Org repos can hold thousands of items. Never read `done/` wholesale.
    repo's `templates/item.md` (fallback: this skill's) *before* writing code:
    goal, background, checkbox tasks, `repos` (repo keys), **1–3 `tags`**
    (system/component names, lowercase), `priority`, and `due`/`effort` if known
-   or asked.
+   or asked. If the project defines milestones and the work is clearly for
+   later, propose a `milestone`; otherwise leave it empty (= now). Only use
+   names from the project README's `milestones` list.
 3. Show the plan and get a go before implementing. Trivial one-step changes
    don't need an item. If backlog lines cover the work, remove them.
 
@@ -101,6 +103,28 @@ commit. Never delete items.
 remove the line. When a backlog passes ~50 lines, suggest a pass: promote,
 merge or strike lines older than a year.
 
+**Milestones.** Defined per project in the project README frontmatter:
+
+```yaml
+milestones:
+  - name: mvp
+    target: 2026-12-20
+    status: open
+  - name: later          # explicit "not now", no target
+    status: open
+```
+
+- **Add:** append to the list (kebab-case or version-like name, optional
+  `target`), commit `todo(<project>): add milestone <name>`.
+- **Move items:** set `milestone` on each item; one commit for the batch.
+- **Rename:** update the list and every item using the old name (active and
+  done) in one commit.
+- **Close:** set `status: closed`, only when no active item references it.
+- A milestone's `target` never sets or implies `due` on items.
+- Order of open milestones: by `target`, earliest first; milestones without
+  `target` last, in list order. Items with no milestone count as **now**, ahead
+  of every milestone.
+
 **Prioritize (`/todo-next`).** See section 5.
 
 **Review (`/todo-review`).** See section 6.
@@ -118,32 +142,43 @@ frontmatter search per section 3.
    if the user asks. Todo repos are always private.
 5. Add the org and a matching rule to the map, then show the diff.
 
-## 5. Priority list (`/todo-next [repo] [--all]`)
+## 5. Priority list (`/todo-next [repo] [--milestone <name>] [--all-milestones] [--all]`)
 
 **Scope.** Default: active items in the resolved org repo whose `repos` contain
 the current repo key, across **all projects** in that org repo. With a repo
 argument: that repo key (resolve its org via the map). With `--all`: every org
 repo under the root — shown to the user only, never written anywhere.
 
-Read frontmatter only. **Sort deterministically**, in this order:
+**Milestone filter.** Default: items with no milestone plus each project's
+**current milestone** (its first open milestone in order). Later milestones are
+summarized in one line with counts. `--milestone <name>` shows only that
+milestone; `--all-milestones` ranks everything. Items due within 14 days or
+overdue are always shown, whatever their milestone.
+
+Read frontmatter (items and project READMEs) only. **Sort deterministically**,
+in this order:
 1. `status: blocked` → removed from the ranking, listed separately with
    `blocked_by`.
 2. `due` within 14 days or overdue → first.
-3. `priority`: high, normal, low.
-4. `due`: earliest first; missing `due` after dated items.
-5. `created`: oldest first.
+3. Milestone order: none (= now), then open milestones by `target`, undated
+   last. Items referencing a closed or unknown milestone rank as none and are
+   flagged `?`.
+4. `priority`: high, normal, low.
+5. `due`: earliest first; missing `due` after dated items.
+6. `created`: oldest first.
 
 **Output:**
 
 ```
-#  Prio    Due         Eff  Title                         Project
-1  high    2026-11-28  s    Rotate API token for billing  billing
-2  high    —           m    Invoice sync retries          billing
-3  normal  2026-12-15  l    Time report reconciliation    billing
+#  Prio    Due         Eff  MS   Title                         Project
+1  high    2026-11-28  s    —    Rotate API token for billing  billing
+2  high    —           m    mvp  Invoice sync retries          billing
+3  normal  2026-12-15  l    mvp  Time report reconciliation    billing
 Blocked: 1  (cert-renewal – waiting for vendor)
+Later:   v1.1 (2027-02-01): 7 · later: 12
 ```
 
-Mark overdue `due` with `!`. After the table, Claude may add at most three
+Mark overdue `due` with `!`, and a milestone past its `target` with `!`. After the table, Claude may add at most three
 short observations, clearly separated (e.g. "X unblocks Y", "A and B overlap",
 "high + s: quick win"). Observations never change the order.
 
@@ -161,7 +196,15 @@ with its evidence:
 | **Close** | All checkboxes ticked, or commits with `todo: <slug>` in the current code repo (`git log --grep "todo: <slug>"`) newer than the item's last change |
 | **Merge** | Overlapping title, tags and repos with another active item. Keep the older; move the other's open tasks into it; close the other as `dropped` with `duplicate_of: <slug>` |
 | **Drop?** | No change to the item (git log on the file) in 60+ days and no matching commits |
+| **Fix milestone** | Item references a closed or unknown milestone → propose the current one or none |
 | **Keep** | Everything else (don't list individually; give a count) |
+
+Then milestones, per project:
+
+| Proposal | Evidence |
+|---|---|
+| **Close milestone** | Open, and no active item references it |
+| **Reschedule** | Past `target` with active items → move them to the next milestone, or push `target` (user picks) |
 
 Only check commits in code repos available locally; say which repos were not
 checked. Present the proposals as a numbered list and let the user approve per

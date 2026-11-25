@@ -31,12 +31,36 @@ projects/
 ```markdown
 ---
 last_review: 2026-11-25
+milestones:
+  - name: mvp
+    target: 2026-12-20
+    status: open
+  - name: v1.1
+    target: 2027-02-01
+    status: open
+  - name: later          # explicit "not now", no target
+    status: open
 ---
 # <project>
 What it is, who owns it.
 
 Code repos: acme/api, acme/web
 ```
+
+## Milestones
+
+Milestones group items that belong to the same step — a release, a phase,
+"after go-live". They are optional and defined **per project** in the project
+README, never as folders.
+
+- An item sets `milestone: <name>` using a name from that list. No milestone =
+  **now**.
+- Open milestones are ordered by `target` (earliest first); milestones without
+  `target` come last. `later` is the conventional bucket for "planned, not now".
+- A milestone's `target` is a goal for the group. It never sets `due` on items
+  — `due` is a hard deadline for one item.
+- Close a milestone (`status: closed`) once no active item references it.
+- For something that is only an idea, use `backlog.md` instead.
 
 ## Lifecycle
 
@@ -61,6 +85,7 @@ priority:     low | normal | high
 created:      2026-11-23
 due:          2026-12-15         # optional
 effort:       s | m | l          # optional: s < half a day, m ≤ 3 days, l > 3 days
+milestone:                       # optional, name from the project README
 closed:                          # set on done/dropped
 owner:        <user>
 repos:        [acme/api]         # <owner>/<name> of affected code repos
@@ -76,8 +101,10 @@ duplicate_of:                    # slug of the item this was merged into
 ## Priorities
 
 There are no manual rank numbers. Order comes from, in this order: blocked
-items aside → `due` within 14 days or overdue → `priority` → `due` →
-`created`. To move something up, raise `priority` or set `due`.
+items aside → `due` within 14 days or overdue → milestone (none first, then by
+`target`) → `priority` → `due` → `created`. To move something up, raise
+`priority`, set `due`, or move it to an earlier milestone. To push something
+back without dropping it, move it to a later milestone.
 
 ## Git
 
@@ -92,8 +119,9 @@ items aside → `due` within 14 days or overdue → `priority` → `due` →
 ## Review
 
 Run a review when `active/` passes ~15 items or `last_review` is older than 30
-days: close what's finished, merge duplicates, drop what's stale. Proposals
-need approval; nothing is closed automatically.
+days: close what's finished, merge duplicates, drop what's stale, close empty
+milestones and reschedule overdue ones. Proposals need approval; nothing is
+closed automatically.
 
 ## Content
 

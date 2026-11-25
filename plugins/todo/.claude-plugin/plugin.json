@@ -1,6 +1,6 @@
 {
   "name": "todo",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Plan, track, prioritize and close work as todo items in per-organization git repos, kept outside the code repo.",
   "author": {
     "name": "Interspace AB",

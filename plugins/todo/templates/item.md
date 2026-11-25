@@ -6,6 +6,7 @@ priority: normal
 created: YYYY-MM-DD
 due:
 effort:
+milestone:
 closed:
 owner:
 repos: []

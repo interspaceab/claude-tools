@@ -18,8 +18,8 @@ in that organization (yourself, your company, an employer, a customer).
 
 | Command | What it does |
 |---|---|
-| `/todo-next [repo] [--all]` | Prioritized list of active items touching a code repo, across all projects in its org repo. `--all` spans every org repo (shown only to you). |
-| `/todo-review [project] [--org]` | Proposes closing finished items, merging duplicates and dropping stale ones, with evidence. Nothing changes without your approval. |
+| `/todo-next [repo] [--milestone <name>] [--all-milestones] [--all]` | Prioritized list of active items touching a code repo, across all projects in its org repo. Shows unscheduled items and the current milestone; later milestones are summarized. `--all` spans every org repo (shown only to you). |
+| `/todo-review [project] [--org]` | Proposes closing finished items, merging duplicates, dropping stale ones, closing empty milestones and rescheduling overdue ones — with evidence. Nothing changes without your approval. |
 
 Planning, resuming, progress and closing happen through the `todo` skill as you
 work — no command needed.
@@ -43,8 +43,10 @@ work — no command needed.
 - **Frontmatter** carries `type`, `status`, `priority`, `due`, `effort`, dates,
   `repos`, `tags` and refs. Claude searches frontmatter and reads full items
   only when needed, so thousands of items stay cheap.
-- **Deterministic priorities:** blocked aside → due soon → priority → due →
-  age. No manual rank numbers.
+- **Milestones** per project (in the project README) group items into steps
+  like `mvp`, `v1.1` or `later`. No milestone = now.
+- **Deterministic priorities:** blocked aside → due soon → milestone →
+  priority → due → age. No manual rank numbers.
 - **Duplicate check** before creating an item; **`todo: <slug>`** in code
   commits gives reviews hard evidence.
 - **Pull before, push after**, one commit per change, never force-push.
@@ -73,6 +75,9 @@ See [templates/CONVENTIONS.md](templates/CONVENTIONS.md) for the full format.
 
 ## Changelog
 
+- **0.3.0** — Milestones per project: `milestone` field, ordering in
+  `/todo-next` (current milestone by default, `--milestone`,
+  `--all-milestones`), milestone proposals in `/todo-review`.
 - **0.2.0** — `/todo-next` and `/todo-review`; `due`, `effort`, `duplicate_of`
   fields; required tags; duplicate check on create; frontmatter-first search;
   `last_review` per project; English templates.

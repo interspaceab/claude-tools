@@ -13,7 +13,7 @@ projects/<project>/
   active/      planned and in-progress items, one file each
   done/<year>/ finished and dropped items, by closing year
   backlog.md   loose ideas, one line each
-  README.md    what the project is, linked code repos
+  README.md    what the project is, linked code repos, milestones
 templates/item.md
 CONVENTIONS.md
 ```
@@ -77,8 +77,8 @@ Useful commands:
 
 | Command | What it does |
 |---|---|
-| `/todo-next` | Prioritized list of active items for the current repo |
-| `/todo-review` | Proposes closing, merging or dropping items — you approve |
+| `/todo-next` | Prioritized list of active items for the current repo and its current milestone |
+| `/todo-review` | Proposes closing, merging or dropping items and tidying milestones — you approve |
 
 ## Rules in short
 

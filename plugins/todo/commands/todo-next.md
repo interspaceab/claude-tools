@@ -1,6 +1,6 @@
 ---
 description: Show a prioritized list of active todos for a code repo
-argument-hint: "[repo] [--all]"
+argument-hint: "[repo] [--milestone <name>] [--all-milestones] [--all]"
 ---
 
 Use the `todo` skill, section 5 (priority list), with these arguments: $ARGUMENTS

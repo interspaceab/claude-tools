@@ -1,5 +1,5 @@
 ---
-description: Review active todos — propose closing, merging duplicates or dropping stale items
+description: Review active todos and milestones — propose closing, merging duplicates, dropping stale items, closing or rescheduling milestones
 argument-hint: "[project] [--org]"
 ---
 
