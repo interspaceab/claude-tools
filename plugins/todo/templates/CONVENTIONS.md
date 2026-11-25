@@ -1,72 +1,105 @@
-# Todo-konventioner
+# Todo conventions
 
-Det här repot innehåller planering och todos för en organisation. Kod ligger i
-respektive kodrepo, aldrig här. Samma format i alla org-repon så att människor
-och Claude gör likadant.
+This repo holds planning and todos for one organization. Code lives in the
+code repos, never here. Every org repo uses the same format so that people and
+Claude work the same way.
 
-## Struktur
+## Layout
 
 ```
 CONVENTIONS.md
 templates/item.md
 projects/
-  <projekt>/
-    README.md                       # vad projektet är, länkar till kodrepon
-    backlog.md                      # lösa idéer, en rad var
+  <project>/
+    README.md                         # what it is, linked code repos, last_review
+    backlog.md                        # loose ideas, one line each
     active/2026-11-23-invoice-sync.md
     done/2026/2026-11-02-api-auth.md
 ```
 
-- **En fil per arbetsuppgift.** En uppgift = något som ska byggas/ändras och
-  kan bockas av som helhet. Små deluppgifter är checkboxar i filen, inte egna filer.
-- **Filnamn:** `ÅÅÅÅ-MM-DD-<slug>.md`, datum = skapad, slug i kebab-case på
-  engelska, max ~5 ord. Filnamnet ändras aldrig (git-historiken följer med).
-- **Projektnamn:** kebab-case, normalt samma som kodrepots namn.
-- **backlog.md:** `- [typ] kort beskrivning (ÅÅÅÅ-MM-DD)`. Lyfts till en egen
-  fil i `active/` när den ska göras, och raden tas bort.
+- **One file per work item.** An item is something to build or change that can
+  be closed as a whole. Small steps are checkboxes inside it, not files.
+- **File name:** `YYYY-MM-DD-<slug>.md`. Date = created; slug in kebab-case,
+  max ~5 words. The file name never changes, so git history follows it.
+- **Project names:** kebab-case, normally the code repo's name. An item can
+  touch several code repos — list them in `repos`.
+- **backlog.md:** `- [type] short description (YYYY-MM-DD)`. Promoted to a file
+  in `active/` when work starts, and the line is removed.
 
-## Livscykel
+### Project README
 
-| Status    | Plats                   | Betyder                                   |
-|-----------|-------------------------|-------------------------------------------|
-| `active`  | `active/`               | Planerad eller pågående                   |
-| `blocked` | `active/`               | Väntar på något, ange `blocked_by`        |
-| `done`    | `done/<stängningsår>/`  | Klar, `## Resultat` ifylld                |
-| `dropped` | `done/<stängningsår>/`  | Struken, skriv varför under `## Resultat` |
+```markdown
+---
+last_review: 2026-11-25
+---
+# <project>
+What it is, who owns it.
 
-Stängning = sätt `status` + `closed`, fyll i `## Resultat`, sedan
-`git mv active/<fil> done/<år>/<fil>`. Ingen radering — strukna uppgifter är
-också historik.
+Code repos: acme/api, acme/web
+```
+
+## Lifecycle
+
+| Status    | Location           | Meaning                                         |
+|-----------|--------------------|-------------------------------------------------|
+| `active`  | `active/`          | Planned or in progress                          |
+| `blocked` | `active/`          | Waiting on something — set `blocked_by`         |
+| `done`    | `done/<close year>/` | Finished, `## Outcome` filled in              |
+| `dropped` | `done/<close year>/` | Not doing it — say why in `## Outcome`; set `duplicate_of` if merged |
+
+Closing = set `status` and `closed`, fill in `## Outcome`, then
+`git mv active/<file> done/<year>/<file>`. Never delete items — dropped work is
+history too.
 
 ## Frontmatter
 
 ```yaml
-title:      Kort, beskrivande rubrik
-type:       feat | fix | refactor | infra | docs | chore
-status:     active | blocked | done | dropped
-priority:   low | normal | high
-created:    2026-11-23
-closed:                       # sätts vid done/dropped
-owner:      <användare>
-repos:      [<org>/<kodrepo>]            # berörda kodrepon
-refs:       []                           # commits, PR:er, ärenden
-blocked_by:                              # fritext eller länk
-tags:       []
+title:        Short, descriptive title
+type:         feat | fix | refactor | infra | docs | chore
+status:       active | blocked | done | dropped
+priority:     low | normal | high
+created:      2026-11-23
+due:          2026-12-15         # optional
+effort:       s | m | l          # optional: s < half a day, m ≤ 3 days, l > 3 days
+closed:                          # set on done/dropped
+owner:        <user>
+repos:        [acme/api]         # <owner>/<name> of affected code repos
+tags:         [billing, fortnox] # 1–3, system/component names, lowercase
+refs:         []                 # commits, PRs, tickets
+blocked_by:                      # free text or link
+duplicate_of:                    # slug of the item this was merged into
 ```
 
-`type` följer conventional commits så att det matchar commit-meddelandena.
-Filtrera med t.ex. `rg -l '^type: fix' projects/*/done/2026`.
+`type` follows conventional commits, matching commit messages. Filter with e.g.
+`rg -l '^type: fix' projects/*/done/2026` or `rg -l 'tags:.*fortnox' projects`.
+
+## Priorities
+
+There are no manual rank numbers. Order comes from, in this order: blocked
+items aside → `due` within 14 days or overdue → `priority` → `due` →
+`created`. To move something up, raise `priority` or set `due`.
 
 ## Git
 
-- `git pull --rebase` innan du läser eller ändrar.
-- En commit per logisk ändring, pusha direkt efter.
-- Meddelanden: `todo(<projekt>): add|update|close|drop <slug>`
-- Konflikt vid rebase: lös manuellt, skriv inte över andras ändringar.
+- `git pull --rebase` before reading or changing anything.
+- One commit per logical change; push right after.
+- Messages: `todo(<project>): add|update|close|drop|merge <slug>`
+- Code commits that belong to an item include `todo: <slug>` in the message
+  body, so reviews can find the evidence.
+- Rebase conflict: resolve by hand, never overwrite other people's changes.
+  Never force-push.
 
-## Innehåll
+## Review
 
-- **Inga hemligheter.** Lösenord, tokens, nycklar → hänvisa till valvet.
-- **Inget innehåll mellan organisationer.** Referera till ett id/kodrepo om det
-  behövs, kopiera aldrig text från ett annat org-repo hit.
-- Skriv så att en kollega förstår uppgiften utan att ha varit med i sessionen.
+Run a review when `active/` passes ~15 items or `last_review` is older than 30
+days: close what's finished, merge duplicates, drop what's stale. Proposals
+need approval; nothing is closed automatically.
+
+## Content
+
+- **No secrets.** Passwords, tokens, keys → reference the vault.
+- **No content across organizations.** Reference an id or code repo if needed;
+  never copy text from another organization's todo repo.
+- Write so a colleague understands the item without having been there.
+- Templates, headings, frontmatter keys, slugs and commit messages are English.
+  Free-text prose may follow the team's language.

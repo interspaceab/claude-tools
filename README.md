@@ -20,7 +20,7 @@ Update with `/plugin marketplace update interspace`.
 
 | Plugin | Description |
 |--------|-------------|
-| [todo](plugins/todo) | Plan, track and close work as todo items in per-organization git repos, kept outside the code repo. |
+| [todo](plugins/todo) | Plan, track, prioritize and close work as todo items in per-organization git repos, kept outside the code repo. |
 
 ## Layout
 

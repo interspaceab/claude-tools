@@ -1,81 +1,88 @@
-# Todo – <ORGANISATION>
+# Todo – <ORGANIZATION>
 
-Planering och todos för arbete inom <ORGANISATION>: *vad* som ska göras,
-*varför*, och vad som blev gjort. Koden ligger i respektive kodrepo, aldrig här.
+Planning and todos for work within <ORGANIZATION>: *what* to do, *why*, and
+what got done. Code lives in the code repos, never here.
 
-Repot är privat och delas bara med de som jobbar inom <ORGANISATION>. Lägg
-aldrig in lösenord, tokens eller nycklar.
+This repo is private and shared only with people who work within
+<ORGANIZATION>. Never add passwords, tokens or keys.
 
-## Innehåll
+## Contents
 
 ```
-projects/<projekt>/
-  active/     pågående och planerade uppgifter, en fil per uppgift
-  done/<år>/  klara och strukna uppgifter, sorterade på stängningsår
-  backlog.md  lösa idéer, en rad var
+projects/<project>/
+  active/      planned and in-progress items, one file each
+  done/<year>/ finished and dropped items, by closing year
+  backlog.md   loose ideas, one line each
+  README.md    what the project is, linked code repos
 templates/item.md
 CONVENTIONS.md
 ```
 
-Format, statusar och commit-regler står i [CONVENTIONS.md](CONVENTIONS.md).
+Format, statuses and commit rules are in [CONVENTIONS.md](CONVENTIONS.md).
 
-## Kom igång
+## Getting started
 
-### 1. Klona till en gemensam rot
+### 1. Clone into a shared root
 
-Alla todo-repon klonas bredvid varandra under samma rot, så att de inte krockar
-med varandra eller med kodrepon:
+All todo repos are cloned side by side under the same root, so they don't
+collide with each other or with code repos:
 
 ```bash
 # Linux/macOS
-git clone <REMOTE-URL> ~/todo/<KORTNAMN>
+git clone <REMOTE-URL> ~/todo/<SHORTNAME>
 
 # Windows (PowerShell)
-git clone <REMOTE-URL> "$env:USERPROFILE\todo\<KORTNAMN>"
+git clone <REMOTE-URL> "$env:USERPROFILE\todo\<SHORTNAME>"
 ```
 
-### 2a. Jobba manuellt
+### 2a. Working by hand
 
 1. `git pull --rebase`
-2. Kopiera `templates/item.md` till
-   `projects/<projekt>/active/ÅÅÅÅ-MM-DD-<slug>.md` och fyll i den.
-3. Commit + push: `todo(<projekt>): add <slug>`
-4. När uppgiften är klar: fyll i `## Resultat`, sätt `status: done` och
-   `closed:`, och kör `git mv active/<fil> done/<år>/<fil>`.
+2. Copy `templates/item.md` to
+   `projects/<project>/active/YYYY-MM-DD-<slug>.md` and fill it in.
+3. Commit and push: `todo(<project>): add <slug>`
+4. When done: fill in `## Outcome`, set `status: done` and `closed:`, then
+   `git mv active/<file> done/<year>/<file>`.
 
-### 2b. Jobba med Claude Code
+### 2b. Working with Claude Code
 
-Installera pluginen:
+Install the plugin:
 
 ```
 /plugin marketplace add interspaceab/claude-tools
 /plugin install todo@interspace
 ```
 
-Skapa sedan `~/todo/map.yaml` som talar om vilket todo-repo och projekt varje
-kodrepo hör till. Minimal variant:
+Then create `~/todo/map.yaml`, which tells Claude which todo repo and project
+each code repo belongs to. Minimal version:
 
 ```yaml
 version: 1
 root: ~/todo
 orgs:
-  <KORTNAMN>:
-    path: <KORTNAMN>
+  <SHORTNAME>:
+    path: <SHORTNAME>
     remote: <REMOTE-URL>
 rules:
   - match: { remote: "<GIT-HOST>/<ORG>/*" }
-    org: <KORTNAMN>
+    org: <SHORTNAME>
 ```
 
-Fler exempel finns i
+More examples in
 [map.example.yaml](https://github.com/interspaceab/claude-tools/blob/main/plugins/todo/templates/map.example.yaml).
-Om ett kodrepo inte matchar någon regel frågar Claude var uppgiften ska ligga.
-Den gissar aldrig.
+If a code repo matches no rule, Claude asks where the item belongs. It never
+guesses.
 
-## Regler i korthet
+Useful commands:
 
-- En fil per uppgift. Deluppgifter är checkboxar i filen.
-- Pull före ändring, pusha direkt efter. Force-pusha aldrig.
-- Inga hemligheter, och inget innehåll kopierat från andra organisationers
-  todo-repon.
-- Skriv så att en kollega förstår uppgiften utan att ha varit med.
+| Command | What it does |
+|---|---|
+| `/todo-next` | Prioritized list of active items for the current repo |
+| `/todo-review` | Proposes closing, merging or dropping items — you approve |
+
+## Rules in short
+
+- One file per item. Small steps are checkboxes.
+- Pull before changing, push right after. Never force-push.
+- No secrets, and no content copied from other organizations' todo repos.
+- Write so a colleague understands the item without having been there.

@@ -4,25 +4,28 @@ type: feat
 status: active
 priority: normal
 created: YYYY-MM-DD
+due:
+effort:
 closed:
 owner:
 repos: []
+tags: []
 refs: []
 blocked_by:
-tags: []
+duplicate_of:
 ---
 
-## Mål
-Vad ska vara sant när det här är klart?
+## Goal
+What should be true when this is done?
 
-## Bakgrund
-Varför, och vad gäller nu.
+## Background
+Why, and what the current state is.
 
-## Uppgifter
+## Tasks
 - [ ] 
 
-## Beslut och anteckningar
-- ÅÅÅÅ-MM-DD: 
+## Decisions & notes
+- YYYY-MM-DD: 
 
-## Resultat
-Fylls i vid stängning: vad blev gjort, commits/PR:er, kvarvarande saker (→ backlog).
+## Outcome
+Filled in on close: what was done, commits/PRs, leftovers (→ backlog).

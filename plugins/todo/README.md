@@ -14,6 +14,16 @@ in that organization (yourself, your company, an employer, a customer).
 /plugin install todo@interspace
 ```
 
+## Commands
+
+| Command | What it does |
+|---|---|
+| `/todo-next [repo] [--all]` | Prioritized list of active items touching a code repo, across all projects in its org repo. `--all` spans every org repo (shown only to you). |
+| `/todo-review [project] [--org]` | Proposes closing finished items, merging duplicates and dropping stale ones, with evidence. Nothing changes without your approval. |
+
+Planning, resuming, progress and closing happen through the `todo` skill as you
+work — no command needed.
+
 ## How it works
 
 ```
@@ -30,13 +40,16 @@ in that organization (yourself, your company, an employer, a customer).
 - **One file per work item** in `projects/<project>/active/`, moved with
   `git mv` to `done/<year>/` when closed. Low merge-conflict risk when several
   people and agents write at once.
-- **Frontmatter** carries `type` (conventional-commit style), `status`,
-  `priority`, dates, linked repos and refs — filter with `rg`.
+- **Frontmatter** carries `type`, `status`, `priority`, `due`, `effort`, dates,
+  `repos`, `tags` and refs. Claude searches frontmatter and reads full items
+  only when needed, so thousands of items stay cheap.
+- **Deterministic priorities:** blocked aside → due soon → priority → due →
+  age. No manual rank numbers.
+- **Duplicate check** before creating an item; **`todo: <slug>`** in code
+  commits gives reviews hard evidence.
 - **Pull before, push after**, one commit per change, never force-push.
 
 See [templates/CONVENTIONS.md](templates/CONVENTIONS.md) for the full format.
-Templates are in Swedish; frontmatter keys, slugs and commit messages are
-English.
 
 ## Set up
 
@@ -53,7 +66,14 @@ English.
 
 ## Environment
 
-| Variable    | Default                                        |
-|-------------|------------------------------------------------|
-| `TODO_ROOT` | `root` in the map, else `~/todo`               |
+| Variable    | Default                                           |
+|-------------|---------------------------------------------------|
+| `TODO_ROOT` | `root` in the map, else `~/todo`                  |
 | `TODO_MAP`  | `<root>/private/map.yaml`, else `<root>/map.yaml` |
+
+## Changelog
+
+- **0.2.0** — `/todo-next` and `/todo-review`; `due`, `effort`, `duplicate_of`
+  fields; required tags; duplicate check on create; frontmatter-first search;
+  `last_review` per project; English templates.
+- **0.1.0** — Initial release.
